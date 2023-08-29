@@ -9,7 +9,7 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://University_Manager:Fs1mi9luLWSeT6JY@cluster0.w7rmmpa.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://mdfaishal:gXAYAP3O4aFbA5HN@cluster0.w7rmmpa.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -23,12 +23,22 @@ const run = async () => {
 
     app.get("/books", async (req, res) => {
       try{
-        const cursor = bookCollection.find({});
-      const book = await cursor.toArray();
 
-      res.send({ status: true, data: book });
+        // const searchTerm = req.query.q;
+        // const regex = searchTerm ? new RegExp(searchTerm, 'i') :'';
+        // const query=searchTerm? {
+        //   $or: [
+        //     { title: { $regex: regex } },
+        //     { author: { $regex: regex } }
+        //   ]
+        // } : {}
+        const cursor = bookCollection.find({});
+
+        const book = await cursor.toArray();
+        console.log(book);
+        res.send({ status: true, data: book });
       }catch(e){
-        console.log(e.message,26);
+        console.log(e,42);
       }
     });
 
@@ -58,18 +68,23 @@ const run = async () => {
       try{
         const id = req.params.id;
         const book = req.body;
-      console.log(id,book);
       const result = await bookCollection.findOneAndUpdate(
         { _id:new ObjectId(id) },
         {
           $set: {
-            author: book.author, 
-            name: book.name,
-            genre: book.genre
+            Author: book.Author, 
+            Title: book.Title,
+            Genre: book.Genre
           }
         },
+        { returnOriginal: false }
       );
-      res.send(result);
+            console.log(id,book,result);
+      if (!result) {
+          return res.status(404).send("Book not found");
+      }
+      
+        res.send(result.value);
       }catch(e){
         console.log(e);
       }
