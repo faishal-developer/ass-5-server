@@ -33,10 +33,9 @@ const run = async () => {
         //   ]
         // } : {}
         const cursor = bookCollection.find({});
+      const book = await cursor.toArray();
 
-        const book = await cursor.toArray();
-        console.log(book);
-        res.send({ status: true, data: book });
+      res.send({ status: true, data: book });
       }catch(e){
         console.log(e,42);
       }
